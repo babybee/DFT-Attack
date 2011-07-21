@@ -73,7 +73,4 @@ typedef unsigned char u8;
 #define MAXKB   (256/8)
 #define MAXNR   14
 
-/* This controls loop-unrolling in aes_core.c */
-#undef FULL_UNROLL
-
 #endif /* !HEADER_AES_LOCL_H */
