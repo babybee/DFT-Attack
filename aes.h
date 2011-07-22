@@ -74,10 +74,10 @@ typedef struct aes_key_st AES_KEY;
 int AES_set_encrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
 int AES_set_decrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key);
 
-void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, int num_rounds);
-void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, int num_rounds);
+void reduced_AES_encrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key, int num_rounds);
+void reduced_AES_decrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key, int num_rounds);
 
-#define AES_encrypt(in, out, key) AES_encrypt_rounds((in), (out), (key), (-1))
-#define AES_decrypt(in, out, key) AES_decrypt_rounds((in), (out), (key), (-1))
+#define AES_encrypt(in, out, key) reduced_AES_encrypt((in), (out), (key), (-1))
+#define AES_decrypt(in, out, key) reduced_AES_decrypt((in), (out), (key), (-1))
 
 #endif /* !HEADER_AES_H */

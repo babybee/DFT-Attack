@@ -752,7 +752,7 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits, AES_KEY *k
  * Encrypt a single block
  * in and out can overlap
  */
-void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
+void reduced_AES_encrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
 	const u32 *rk = key->rd_key;
 
 	u32 s0 = 0;
@@ -852,7 +852,7 @@ void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
  * Decrypt a single block
  * in and out can overlap
  */
-void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
+void reduced_AES_decrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
 	const u32 *rk = key->rd_key;
 
 	u32 s0 = 0;
