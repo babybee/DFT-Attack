@@ -4,12 +4,12 @@ MAKE := make
 
 target := attack
 
-lib_aes := lib/aes
-lib_dft := lib/dft
-lib_lsfr := lib/lsfr
+aes := lib/aes
+dft := lib/dft
+lsfr := lib/lsfr
 
-#libraries := $(lib_aes) $(lib_dft) $(lib_lsfr)
-libraries := $(lib_aes)
+#libraries := $(aes) $(dft) $(lsfr)
+libraries := $(aes)
 
 .PHONY: all
 all: $(target)
