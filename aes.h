@@ -60,6 +60,7 @@
 #define AES_MAXNR 14
 #define AES_BLOCK_SIZE 16
 
+
 /* This should be a hidden type, but EVP requires that the size be known */
 struct aes_key_st {
 #ifdef AES_LONG
