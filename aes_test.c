@@ -25,7 +25,7 @@ int main()
 	printf("\n\n");
 	
 	printf("encrypted:\n");
-	AES_set_encrypt_key(master_key, 128, &key); // 128 for 128-version AES
+	AES_set_encrypt_key(master_key, 128, &key); // 128 for 128-bit version AES
 	AES_encrypt(text, encrypted, &key);
 	for (i = 0; i < 16; i++) {
 		printf("%02x ", (unsigned int)encrypted[i]);

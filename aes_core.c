@@ -752,12 +752,22 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits, AES_KEY *k
  * Encrypt a single block
  * in and out can overlap
  */
-void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, int r) {
-	const u32 *rk;
-	u32 s0, s1, s2, s3, t0, t1, t2, t3;
+void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
+	const u32 *rk = key->rd_key;
 
-	/* assert(in && out && key); */
-	rk = key->rd_key;
+	u32 s0 = 0;
+	u32 s1 = 0;
+	u32 s2 = 0;
+	u32 s3 = 0;
+	u32 t0 = 0;
+	u32 t1 = 0;
+	u32 t2 = 0;
+	u32 t3 = 0;
+
+	int r = key->rounds;
+
+	if (0 < num_rounds && num_rounds < r)
+		r = num_rounds;
 
 	/*
 	 * map byte array block to cipher state
@@ -771,65 +781,38 @@ void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
 	/*
 	 * Nr - 1 full rounds:
 	 */
+	for (; r > 1; r--) {
+		rk += 4;
 
-	if (r < 2) {
-		r = key->rounds >> 1;
-	}
-	for (;;) {
 		t0 =
 			Te0[(s0 >> 24)       ] ^
 			Te1[(s1 >> 16) & 0xff] ^
 			Te2[(s2 >>  8) & 0xff] ^
 			Te3[(s3      ) & 0xff] ^
-			rk[4];
+			rk[0];
 		t1 =
 			Te0[(s1 >> 24)       ] ^
 			Te1[(s2 >> 16) & 0xff] ^
 			Te2[(s3 >>  8) & 0xff] ^
 			Te3[(s0      ) & 0xff] ^
-			rk[5];
+			rk[1];
 		t2 =
 			Te0[(s2 >> 24)       ] ^
 			Te1[(s3 >> 16) & 0xff] ^
 			Te2[(s0 >>  8) & 0xff] ^
 			Te3[(s1      ) & 0xff] ^
-			rk[6];
+			rk[2];
 		t3 =
 			Te0[(s3 >> 24)       ] ^
 			Te1[(s0 >> 16) & 0xff] ^
 			Te2[(s1 >>  8) & 0xff] ^
 			Te3[(s2      ) & 0xff] ^
-			rk[7];
-
-		rk += 8;
-		if (--r == 0) {
-			break;
-		}
-
-		s0 =
-			Te0[(t0 >> 24)       ] ^
-			Te1[(t1 >> 16) & 0xff] ^
-			Te2[(t2 >>  8) & 0xff] ^
-			Te3[(t3      ) & 0xff] ^
-			rk[0];
-		s1 =
-			Te0[(t1 >> 24)       ] ^
-			Te1[(t2 >> 16) & 0xff] ^
-			Te2[(t3 >>  8) & 0xff] ^
-			Te3[(t0      ) & 0xff] ^
-			rk[1];
-		s2 =
-			Te0[(t2 >> 24)       ] ^
-			Te1[(t3 >> 16) & 0xff] ^
-			Te2[(t0 >>  8) & 0xff] ^
-			Te3[(t1      ) & 0xff] ^
-			rk[2];
-		s3 =
-			Te0[(t3 >> 24)       ] ^
-			Te1[(t0 >> 16) & 0xff] ^
-			Te2[(t1 >>  8) & 0xff] ^
-			Te3[(t2      ) & 0xff] ^
 			rk[3];
+		
+		s0 = t0;
+		s1 = t1;
+		s2 = t2;
+		s3 = t3;
 	}
 	/*
 	 * apply last round and
@@ -840,28 +823,28 @@ void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
 		(Te3[(t1 >> 16) & 0xff] & 0x00ff0000) ^
 		(Te0[(t2 >>  8) & 0xff] & 0x0000ff00) ^
 		(Te1[(t3      ) & 0xff] & 0x000000ff) ^
-		rk[0];
+		rk[4];
 	PUTU32(out     , s0);
 	s1 =
 		(Te2[(t1 >> 24)       ] & 0xff000000) ^
 		(Te3[(t2 >> 16) & 0xff] & 0x00ff0000) ^
 		(Te0[(t3 >>  8) & 0xff] & 0x0000ff00) ^
 		(Te1[(t0      ) & 0xff] & 0x000000ff) ^
-		rk[1];
+		rk[5];
 	PUTU32(out +  4, s1);
 	s2 =
 		(Te2[(t2 >> 24)       ] & 0xff000000) ^
 		(Te3[(t3 >> 16) & 0xff] & 0x00ff0000) ^
 		(Te0[(t0 >>  8) & 0xff] & 0x0000ff00) ^
 		(Te1[(t1      ) & 0xff] & 0x000000ff) ^
-		rk[2];
+		rk[6];
 	PUTU32(out +  8, s2);
 	s3 =
 		(Te2[(t3 >> 24)       ] & 0xff000000) ^
 		(Te3[(t0 >> 16) & 0xff] & 0x00ff0000) ^
 		(Te0[(t1 >>  8) & 0xff] & 0x0000ff00) ^
 		(Te1[(t2      ) & 0xff] & 0x000000ff) ^
-		rk[3];
+		rk[7];
 	PUTU32(out + 12, s3);
 }
 
@@ -869,13 +852,23 @@ void AES_encrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
  * Decrypt a single block
  * in and out can overlap
  */
-void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, int r) {
-	const u32 *rk;
-	u32 s0, s1, s2, s3, t0, t1, t2, t3;
+void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_KEY *key, const int num_rounds) {
+	const u32 *rk = key->rd_key;
 
-	/* assert(in && out && key); */
-	rk = key->rd_key;
+	u32 s0 = 0;
+       	u32 s1 = 0;
+	u32 s2 = 0;
+	u32 s3 = 0;
+	u32 t0 = 0;
+	u32 t1 = 0;
+	u32 t2 = 0;
+	u32 t3 = 0;
 
+	int r = key->rounds;
+
+	if (0 < num_rounds && num_rounds < r)
+		r = num_rounds;
+	
 	/*
 	 * map byte array block to cipher state
 	 * and add initial round key:
@@ -888,64 +881,38 @@ void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
 	/*
 	 * Nr - 1 full rounds:
 	 */
-	if (r < 2) {
-		r = key->rounds >> 1;
-	}
-	for (;;) {
+	for (; r > 1; r--) {
+		rk += 4;
+
 		t0 =
 			Td0[(s0 >> 24)       ] ^
 			Td1[(s3 >> 16) & 0xff] ^
 			Td2[(s2 >>  8) & 0xff] ^
 			Td3[(s1      ) & 0xff] ^
-			rk[4];
+			rk[0];
 		t1 =
 			Td0[(s1 >> 24)       ] ^
 			Td1[(s0 >> 16) & 0xff] ^
 			Td2[(s3 >>  8) & 0xff] ^
 			Td3[(s2      ) & 0xff] ^
-			rk[5];
+			rk[1];
 		t2 =
 			Td0[(s2 >> 24)       ] ^
 			Td1[(s1 >> 16) & 0xff] ^
 			Td2[(s0 >>  8) & 0xff] ^
 			Td3[(s3      ) & 0xff] ^
-			rk[6];
+			rk[2];
 		t3 =
 			Td0[(s3 >> 24)       ] ^
 			Td1[(s2 >> 16) & 0xff] ^
 			Td2[(s1 >>  8) & 0xff] ^
 			Td3[(s0      ) & 0xff] ^
-			rk[7];
-
-		rk += 8;
-		if (--r == 0) {
-			break;
-		}
-
-		s0 =
-			Td0[(t0 >> 24)       ] ^
-			Td1[(t3 >> 16) & 0xff] ^
-			Td2[(t2 >>  8) & 0xff] ^
-			Td3[(t1      ) & 0xff] ^
-			rk[0];
-		s1 =
-			Td0[(t1 >> 24)       ] ^
-			Td1[(t0 >> 16) & 0xff] ^
-			Td2[(t3 >>  8) & 0xff] ^
-			Td3[(t2      ) & 0xff] ^
-			rk[1];
-		s2 =
-			Td0[(t2 >> 24)       ] ^
-			Td1[(t1 >> 16) & 0xff] ^
-			Td2[(t0 >>  8) & 0xff] ^
-			Td3[(t3      ) & 0xff] ^
-			rk[2];
-		s3 =
-			Td0[(t3 >> 24)       ] ^
-			Td1[(t2 >> 16) & 0xff] ^
-			Td2[(t1 >>  8) & 0xff] ^
-			Td3[(t0      ) & 0xff] ^
 			rk[3];
+
+		s0 = t0;
+		s1 = t1;
+		s2 = t2;
+		s3 = t3;
 	}
 	/*
 	 * apply last round and
@@ -956,27 +923,27 @@ void AES_decrypt_rounds(const unsigned char *in, unsigned char *out, const AES_K
 		(Td4[(t3 >> 16) & 0xff] << 16) ^
 		(Td4[(t2 >>  8) & 0xff] <<  8) ^
 		(Td4[(t1      ) & 0xff])       ^
-		rk[0];
+		rk[4];
 	PUTU32(out     , s0);
 	s1 =
 		(Td4[(t1 >> 24)       ] << 24) ^
 		(Td4[(t0 >> 16) & 0xff] << 16) ^
 		(Td4[(t3 >>  8) & 0xff] <<  8) ^
 		(Td4[(t2      ) & 0xff])       ^
-		rk[1];
+		rk[5];
 	PUTU32(out +  4, s1);
 	s2 =
 		(Td4[(t2 >> 24)       ] << 24) ^
 		(Td4[(t1 >> 16) & 0xff] << 16) ^
 		(Td4[(t0 >>  8) & 0xff] <<  8) ^
 		(Td4[(t3      ) & 0xff])       ^
-		rk[2];
+		rk[6];
 	PUTU32(out +  8, s2);
 	s3 =
 		(Td4[(t3 >> 24)       ] << 24) ^
 		(Td4[(t2 >> 16) & 0xff] << 16) ^
 		(Td4[(t1 >>  8) & 0xff] <<  8) ^
 		(Td4[(t0      ) & 0xff])       ^
-		rk[3];
+		rk[7];
 	PUTU32(out + 12, s3);
 }
