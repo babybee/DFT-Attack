@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include "lfsr.h"
 
-#define ONE 	1
-#define ZERO 	0
-
-#define LEN	2
+#define LEN 4
 
 int main()
 {
-	unsigned char state[LEN] = {ONE, ONE};
+	unsigned char state[LEN] = {1}; // or {0xFF}
 
 	unsigned char feedback[LEN] = {1, 1};
 
