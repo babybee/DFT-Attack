@@ -1,15 +1,15 @@
 CC := gcc
-CFLAGS := -ggdb -Wall -O3 -static -I include
+CFLAGS := -ggdb -Wall -O3 -I include
 MAKE := make
 
 target := attack.run
 
 aes := lib/aes
 dft := lib/dft
-lsfr := lib/lsfr
+lfsr := lib/lfsr
 
-#libraries := $(aes) $(dft) $(lsfr)
-libraries := $(aes)
+#libraries := $(aes) $(dft) $(lfsr)
+libraries := $(aes) $(lfsr)
 
 VPATH = src
 
@@ -23,8 +23,6 @@ $(libraries):
 .PHONY: clean
 clean: 
 	rm -f $(target)
-	for d in $(target) $(libraries); 	\
-	do					\
-		$(MAKE) --directory=$$d clean; 	\
-	done
+	for d in $(libraries); 			\
+		do $(MAKE) --directory=$$d clean; done
 

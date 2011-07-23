@@ -1,13 +1,13 @@
 CC := gcc
-INCLUDE := ../../include/aes
+INCLUDE := ../../include/lfsr
 CFLAGS := -ggdb -Wall -O3 -I $(INCLUDE)
 
 vpath %.h $(INCLUDE)
 
-aes.o: aes_core.c aes_locl.h aes.h
+lfsr.o: lfsr.c lfsr.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-test: test_aes.c aes.o
+test: test_lfsr.c lfsr.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 .PHONY: clean
