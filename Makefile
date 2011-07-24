@@ -1,28 +1,24 @@
-CC := gcc
-CFLAGS := -ggdb -Wall -O3 -I include
-MAKE := make
+CFLAGS := -ggdb -Wall -O2 -I include
 
-target := attack.run
+target := src
 
 aes := lib/aes
 dft := lib/dft
 lfsr := lib/lfsr
+bma := lib/bma
 
-#libraries := $(aes) $(dft) $(lfsr)
+#libraries := $(aes) $(dft) $(lfsr) $(bma)
 libraries := $(aes) $(lfsr)
 
-VPATH = src
+.PHONY: $(target) $(libraries)
+$(target) $(libraries):
+	make --directory=$@
 
-$(target): attack.c $(libraries)
-	$(CC) $(CFLAGS) $< $(aes)/aes.o -o $@
+$(target): $(libraries)
 
-.PHONY: $(libraries)
-$(libraries):
-	$(MAKE) --directory=$@
+$(dft): $(bma)
 
 .PHONY: clean
 clean: 
-	rm -f $(target)
-	for d in $(libraries); 			\
-		do $(MAKE) --directory=$$d clean; done
+	for d in $(target) $(libraries); do make --directory=$$d clean; done
 

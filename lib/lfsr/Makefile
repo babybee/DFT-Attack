@@ -1,6 +1,6 @@
 CC := gcc
 INCLUDE := ../../include/lfsr
-CFLAGS := -ggdb -Wall -O3 -I $(INCLUDE)
+CFLAGS := -ggdb -Wall -O2 -I $(INCLUDE)
 
 vpath %.h $(INCLUDE)
 

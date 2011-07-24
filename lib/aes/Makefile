@@ -1,6 +1,6 @@
 CC := gcc
 INCLUDE := ../../include/aes
-CFLAGS := -ggdb -Wall -O3 -I $(INCLUDE)
+CFLAGS := -ggdb -Wall -O2 -I $(INCLUDE)
 
 vpath %.h $(INCLUDE)
 
