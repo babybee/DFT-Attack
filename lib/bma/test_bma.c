@@ -1,5 +1,6 @@
 #include "bma.h"
 
-void bma()
+int main()
 {
+	return 0;
 }
