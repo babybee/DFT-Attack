@@ -5,7 +5,7 @@ Created on Apr 13, 2011
 '''
 
 
-def bma(sequence):    
+def Berlekamp_Massey_algorithm(sequence):    
     N = len(sequence)
     s = sequence[:]
     
@@ -23,14 +23,19 @@ def bma(sequence):
         d = 0
         for ele in f:
             d ^= s[ele + n - l]
+
         
         if d == 0:
+            print n, '=', f
             b += 1
         else:
             if 2 * l > n:
+                print '>'
+                print n, a, b, f, g
                 f ^= set([a - b + ele for ele in g])
                 b += 1
             else:
+                print '<'
                 temp = f.copy()
                 f = set([b - a + ele for ele in f]) ^ g
                 l = n + 1 - l
