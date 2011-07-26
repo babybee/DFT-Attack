@@ -30,12 +30,15 @@ def bma(s):
                 b = d
                 m = 1
 
-    return C.reverse() # must be reversed in this notation
-    # might have some problems?
-    # because reverse() cannot gurantee the overall degree
+    C = C.reverse()
+    # must be reversed in this notation
+    return C.shift(L - C.degree())
+    # because reverse() cannot guarantee the overall degree
+    # so this is the very reason why the original BMA always output $L$!!!
 
 if __name__ == '__main__':
-    seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0)
+    # seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0)
+    seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0)
     pol = bma(seq)
     
     print 'The input sequence is', seq
