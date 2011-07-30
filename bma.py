@@ -1,22 +1,26 @@
+#!/usr/bin/env sage
+
 from sage.all import *
 
-TheFiniteField = GF(2)
-ThePolynomialRing = TheFiniteField['X']
+import defs
+
+#TheFiniteField = GF(2)
+#ThePolynomialRing = TheFiniteField['X']
 
 def bma(s):    
     "using the notations in 'Shift-register synthesis and BCH decoding' by Massey"
-    C = ThePolynomialRing(1)
-    B = ThePolynomialRing(1)
+    C = defs.ThePolynomialRing(1)
+    B = defs.ThePolynomialRing(1)
 
-    b = TheFiniteField(1)
+    b = defs.TheFiniteField(1)
 
     m = 1 # replacing the orignial notation, x
     L = 0
 
     for N in range(len(s)):
-        d = TheFiniteField(s[N])
+        d = defs.TheFiniteField(s[N])
         for l in range(1, len(C.list())): # range(1, L + 1) will cause out-of-index error
-            d += C.list()[l] * TheFiniteField(s[N - l])
+            d += C.list()[l] * defs.TheFiniteField(s[N - l])
 
         if d == 0:
             m += 1
