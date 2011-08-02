@@ -2,25 +2,22 @@
 
 from sage.all import *
 
-import defs
+def bma(s, TheFiniteField = GF(2)):    
+    ThePolynomialRing = TheFiniteField['x']
 
-#TheFiniteField = GF(2)
-#ThePolynomialRing = TheFiniteField['X']
-
-def bma(s):    
     "using the notations in 'Shift-register synthesis and BCH decoding' by Massey"
-    C = defs.ThePolynomialRing(1)
-    B = defs.ThePolynomialRing(1)
+    C = ThePolynomialRing(1)
+    B = ThePolynomialRing(1)
 
-    b = defs.TheFiniteField(1)
+    b = TheFiniteField(1)
 
     m = 1 # replacing the orignial notation, x
     L = 0
 
     for N in range(len(s)):
-        d = defs.TheFiniteField(s[N])
+        d = TheFiniteField(s[N])
         for l in range(1, len(C.list())): # range(1, L + 1) will cause out-of-index error
-            d += C.list()[l] * defs.TheFiniteField(s[N - l])
+            d += C.list()[l] * TheFiniteField(s[N - l])
 
         if d == 0:
             m += 1
@@ -43,8 +40,8 @@ def bma(s):
     # so this is the very reason why the original BMA always output $L$!!!
 
 if __name__ == '__main__':
-    seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0)
-    #seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0)
+    #seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0)
+    seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     pol = bma(seq)
     
     print 'The input sequence is', seq
