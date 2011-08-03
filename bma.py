@@ -17,7 +17,7 @@ def bma(s, TheFiniteField = GF(2)):
     for N in range(len(s)):
         d = TheFiniteField(s[N])
         for l in range(1, len(C.list())): # range(1, L + 1) will cause out-of-index error
-            d += C.list()[l] * TheFiniteField(s[N - l])
+            d += C.list()[l] * s[N - l]
 
         if d == 0:
             m += 1
