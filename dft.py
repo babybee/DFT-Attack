@@ -7,6 +7,13 @@ from lfsr import lfsr
 from coset import coset
 
 
+def Tr_m(x, m):
+    result = 0
+    for i in range(m):
+        result += (x ** (2 ** i))
+    return result
+
+
 def dft(sequence):
     N = len(sequence)
     fun_p = bma(sequence)
@@ -30,6 +37,9 @@ def dft(sequence):
     for i in range(n):
         seq_b_iv.append((beta ** i).trace())
     seq_b_generator = lfsr(fun_f, seq_b_iv)
+    seq_b = []
+    for output in seq_b_generator:
+        seq_b.append(output)
 
     # let alpha be an element in GF(2^n) with order N
     alpha = beta ** ((2 ** n - 1) / N)
@@ -39,7 +49,7 @@ def dft(sequence):
     I = coset(N)
 
     # step 2. 
-    fun_p_extended = TheExtensionField(fun_p)
+    fun_p_extended = TheExtensionField['Y'](fun_p)
 
     spectra_A = {}
     for k in I:
@@ -51,15 +61,29 @@ def dft(sequence):
         # 1. get coset size
         m = I[k]
 
+        # 2. k-decimation sequence
+        seq_c
+        if m == n:
+            for t in range(2 * m):
+                seq_c.append(seq_b[t * k])
+        elif m < n:
+            for t in range(2 * m):
+                seq_c.append(Tr_m(alpha ** (k * t), m))
+        else:
+            import sys
+            sys.stderr.write("should never happen?")
+            sys.exit(-1)
 
+        fun_p_k_x = bma(seq_c)
 
+        matrix_M_ele = []
+        for i in range(m):
+            for ele in range(i, m + i):
+                matrix_M_ele.append(seq_c[ele])
+        matrix_M = matrix(GF(2), m, m, matrix_M_ele)
 
+        fun_q_x = fun_p_x / fun_p_k_x
 
-
-
-
-
-    
     
 
     print type(seq_b_iv[0])
