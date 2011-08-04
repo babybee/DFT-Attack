@@ -5,6 +5,7 @@ from sage.all import *
 from bma import bma
 from lfsr import lfsr
 from coset import coset
+from convolution import convolution
 
 
 def Tr_m(x, m):
@@ -14,9 +15,9 @@ def Tr_m(x, m):
     return result
 
 
-def dft(sequence):
-    N = len(sequence)
-    fun_p = bma(sequence)
+def dft(seq_a):
+    N = len(seq_a)
+    fun_p = bma(seq_a)
     L = fun_p.degree()
     assert 2 * L <= N
     # should have some backup procedure?
@@ -31,6 +32,7 @@ def dft(sequence):
     TheExtensionField = GF(2 ** n, 'beta')
     beta = TheExtensionField.gen()
     fun_f = TheExtensionField.polynomial()
+    TheExtensionPolynomialRing = TheExtensionField['Y']
 
     # construct a new m-seq {b_t}
     seq_b_iv = []
@@ -38,9 +40,8 @@ def dft(sequence):
         seq_b_iv.append((beta ** i).trace())
     seq_b_generator = lfsr(seq_b_iv, fun_f)
     seq_b = []
-    # FIXME need to change this part based on the new modifications of lfsr.py
-    for output in seq_b_generator:
-        seq_b.append(output)
+    for i in range(2 ** len(seq_b_iv) - 1):
+        seq_b.append(seq_b_generator.next())
 
     # let alpha be an element in GF(2^n) with order N
     alpha = beta ** ((2 ** n - 1) / N)
@@ -50,7 +51,7 @@ def dft(sequence):
     I = coset(N)
 
     # step 2. 
-    fun_p_extended = TheExtensionField['Y'](fun_p)
+    fun_p_extended = TheExtensionPolynomialRing(fun_p)
 
     spectra_A = {}
     for k in I:
@@ -63,7 +64,7 @@ def dft(sequence):
         m = I[k]
 
         # 2. k-decimation sequence
-        seq_c
+        seq_c = []
         if m == n:
             for t in range(2 * m):
                 seq_c.append(seq_b[t * k])
@@ -75,7 +76,7 @@ def dft(sequence):
             sys.stderr.write("should never happen?")
             sys.exit(-1)
 
-        fun_p_k_x = bma(seq_c)
+        fun_p_k = bma(seq_c)
 
         matrix_M_ele = []
         for i in range(m):
@@ -83,7 +84,32 @@ def dft(sequence):
                 matrix_M_ele.append(seq_c[ele])
         matrix_M = matrix(GF(2), m, m, matrix_M_ele)
 
-        fun_q_x = fun_p_x / fun_p_k_x
+        # 3. contruct a filter
+        fun_q = fun_p / fun_p_k
+        #print fun_q
+        #print type(fun_q)
+
+        # 4. compute the time convolution
+        seq_v_generator = convolution(seq_a, fun_q)
+        seq_v = []
+        for i in range(m):
+            seq_v.append(seq_v_generator.next())
+
+        # 4.5 solve linear equations to get x_i
+        matrix_x = M.inverse() * matrix(GF(2), m, 1, seq_v)
+
+        # 5. compute A_k = V * T
+        V = 0
+        for i in range(m):
+            if 1 == matrix_x[i][0]:
+                V += alpha ** (i * k)
+
+        fun_q_extended = TheExtensionPolynomialRing(fun_p)
+        T = fun_q_extended(alpha ** k) ** (-1)
+
+        A_k = V * T
+
+        spectra_A[k] = A_k
 
     
     return spectra_A
@@ -91,4 +117,5 @@ def dft(sequence):
 
 
 if __name__ == '__main__':
-    print dft([1, 1, 1, 1, 0, 0, 1, 1, 1])
+    seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0] * 3
+    print dft(seq)

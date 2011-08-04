@@ -2,7 +2,7 @@
 
 from sage.all import *
 
-def lfsr(polynomial, init_value, field = GF(2)):
+def lfsr(init_value, polynomial, field = GF(2)):
     """"
     polynomial can be polynomial in GF with list() -- [c0, c1, ...]
     or a list with corresponding coefficients
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     seq = [0, 0, 1, 0, 0, 0]
     fun = [1, 0, 0, 0, 1, 1, 1]
 
-    my_lfsr = lfsr(fun, seq)
+    my_lfsr = lfsr(seq, fun)
     for i in range(20):
         print my_lfsr.next(),
     print

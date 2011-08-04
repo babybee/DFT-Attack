@@ -4,6 +4,9 @@ def coset(N):
     "return a dict with coset leaders and its cosets size"
     result = {}
 
+    # N must be odd
+    assert N % 2 == 1
+
     flag = [False] * N
     for x in range(N):
         if flag[x]: # if already processed
@@ -20,4 +23,5 @@ def coset(N):
 
 
 if __name__ == '__main__':
-    print coset(15)
+    for i in range(1, 100, 2):
+        print i, coset(i)
