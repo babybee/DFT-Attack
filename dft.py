@@ -36,8 +36,9 @@ def dft(sequence):
     seq_b_iv = []
     for i in range(n):
         seq_b_iv.append((beta ** i).trace())
-    seq_b_generator = lfsr(fun_f, seq_b_iv)
+    seq_b_generator = lfsr(seq_b_iv, fun_f)
     seq_b = []
+    # FIXME need to change this part based on the new modifications of lfsr.py
     for output in seq_b_generator:
         seq_b.append(output)
 
@@ -85,15 +86,7 @@ def dft(sequence):
         fun_q_x = fun_p_x / fun_p_k_x
 
     
-
-    print type(seq_b_iv[0])
-
-    for i in seq_b:
-        print i,
-    print 
-
-
-    return n
+    return spectra_A
 
 
 

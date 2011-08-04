@@ -2,7 +2,7 @@
 
 from sage.all import *
 
-def lfsr(polynomial, init_value, field = GF(2), length = None):
+def lfsr(polynomial, init_value, field = GF(2)):
     """"
     polynomial can be polynomial in GF with list() -- [c0, c1, ...]
     or a list with corresponding coefficients
@@ -10,10 +10,8 @@ def lfsr(polynomial, init_value, field = GF(2), length = None):
     coeffs = list(polynomial)[:-1] # remove the last element
     states = list(init_value)
     assert len(states) == len(coeffs)
-    if None == length:
-        length = field.order() ** len(states) - 1
 
-    for i in xrange(length):
+    while True:
         feedback = field(0)
         for j, ele in enumerate(coeffs):
             if ele != 0: 
@@ -25,9 +23,10 @@ def lfsr(polynomial, init_value, field = GF(2), length = None):
 
 
 if __name__ == '__main__':
-    f = [1, 0, 0, 0, 1, 1, 1]
-    s = [0, 0, 1, 0, 0, 0]
+    seq = [0, 0, 1, 0, 0, 0]
+    fun = [1, 0, 0, 0, 1, 1, 1]
 
-    generator = lfsr(f, s)
-    for i in generator:
-        print i,
+    my_lfsr = lfsr(fun, seq)
+    for i in range(20):
+        print my_lfsr.next(),
+    print
