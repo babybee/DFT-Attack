@@ -7,13 +7,14 @@ from sage.all import *
 def convolution(sequence, polynomial, field = GF(2)):
     "return a generator of the filtered sequence"
     coeffs = list(polynomial)
+    period = len(sequence) # so must be a full period
 
-    assert len(coeffs) < len(sequence)
-
-    for t in range(len(sequence) - len(coeffs) + 1):
+    t = 0
+    while True:
         result = field(0)
         for i, coe in enumerate(coeffs):
-            result += coe * sequence[i + t]
+            result += coe * sequence[(i + t) % period]
+        t += 1
         yield result
 
 if __name__ == '__main__':
@@ -21,6 +22,6 @@ if __name__ == '__main__':
     fun = (1, 1)
 
     gen = convolution(seq, fun)
-    for i in gen:
-        print i,
+    for i in range(20):
+        print gen.next(),
     print
