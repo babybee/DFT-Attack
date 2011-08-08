@@ -135,6 +135,11 @@ def dft(seq_a):
 
         spectra_A[k] = A_k
 
+    # to compute the A_k where k is not coset leader
+    for i in I:
+        for j in range(1, I[i]):
+            spectra_A[(i * (2 ** j)) % N] = spectra_A[i] ** (2 ** j)
+    # print alpha ** 6
     
     return spectra_A
 
