@@ -17,7 +17,7 @@ def Tr_m(x, m):
 
 def dft(seq_a):
     N = len(seq_a)
-    fun_p = bma(seq_a) # bma() will change the input as periodic
+    fun_p = bma(seq_a * 2) # change the input sequence as periodic
     L = fun_p.degree()
     # print fun_p
     # print L
@@ -63,7 +63,7 @@ def dft(seq_a):
     fun_p_extended = TheExtensionPolynomialRing(fun_p)
     # print fun_p_extended
 
-    spectra_A = {}
+    spectra_A = [None] * N
     for k in I:
         if fun_p_extended(alpha ** k) != 0:
             spectra_A[k] = 0
@@ -80,7 +80,7 @@ def dft(seq_a):
         seq_c = []
         if m == n:
             for t in range(2 * m):
-                seq_c.append(seq_b[t * k])
+                seq_c.append(seq_b[(t * k) % (2**n - 1)])
         elif m < n:
             for t in range(2 * m):
                 seq_c.append(Tr_m(alpha ** (k * t), m))
@@ -93,7 +93,9 @@ def dft(seq_a):
         # print seq_c
 
         fun_p_k = bma(seq_c)
-        print fun_p_k
+        # print fun_p
+        # print fun_p_k
+        # print fun_p / fun_p_k
 
         matrix_M_ele = []
         for i in range(m):
@@ -103,7 +105,9 @@ def dft(seq_a):
         # print matrix_M
 
         # 3. contruct a filter
-        fun_q = fun_p / fun_p_k
+        fun_q = fun_p.parent()(fun_p / fun_p_k)
+        # print fun_q
+        # print type(fun_q)
 
         # 4. compute the time convolution
         seq_v_generator = convolution(seq_a, fun_q)
@@ -112,7 +116,7 @@ def dft(seq_a):
             seq_v.append(seq_v_generator.next())
 
         # 4.5 solve linear equations to get x_i
-        matrix_x = M.inverse() * matrix(GF(2), m, 1, seq_v)
+        matrix_x = matrix_M.inverse() * matrix(GF(2), m, 1, seq_v)
 
         # 5. compute A_k = V * T
         V = 0
@@ -120,10 +124,14 @@ def dft(seq_a):
             if 1 == matrix_x[i][0]:
                 V += alpha ** (i * k)
 
-        fun_q_extended = TheExtensionPolynomialRing(fun_p)
+        fun_q_extended = TheExtensionPolynomialRing(fun_q)
+        # print fun_q_extended
         T = fun_q_extended(alpha ** k) ** (-1)
+        # print T
+        # print type(T)
 
         A_k = V * T
+        # print A_k
 
         spectra_A[k] = A_k
 
