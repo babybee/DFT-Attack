@@ -17,15 +17,16 @@ def Tr_m(x, m):
 
 def dft(seq_a):
     N = len(seq_a)
-    fun_p = bma(seq_a)
+    fun_p = bma(seq_a) # bma() will change the input as periodic
     L = fun_p.degree()
-    assert 2 * L <= N
-    # should have some backup procedure?
+    
+    # treat the input seq as peroidic so remove this
+    # assert 2 * L <= N
 
     # selection of parameters
-    # fine smallest n
+    # fine smallest n, s.t. N | (2^n - 1)
     n = 1
-    while 0 == (2 ** n - 1) % n:
+    while 0 != (2 ** n - 1) % N:
         n += 1
 
     # define the extension field
@@ -59,6 +60,9 @@ def dft(seq_a):
             spectra_A[k] = 0
             continue
 
+        print fun_p_extended(alpha ** k)
+        print fun_p_extended
+
         # sub-routine for computing A_k
         # 1. get coset size
         m = I[k]
@@ -86,8 +90,9 @@ def dft(seq_a):
 
         # 3. contruct a filter
         fun_q = fun_p / fun_p_k
-        #print fun_q
-        #print type(fun_q)
+        print fun_p
+        print fun_p_k
+        print fun_q
 
         # 4. compute the time convolution
         seq_v_generator = convolution(seq_a, fun_q)
@@ -117,5 +122,5 @@ def dft(seq_a):
 
 
 if __name__ == '__main__':
-    seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0] * 3
+    seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0]
     print dft(seq)

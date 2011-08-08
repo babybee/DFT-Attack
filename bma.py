@@ -2,8 +2,11 @@
 
 from sage.all import *
 
-def bma(s, TheFiniteField = GF(2)):    
-    ThePolynomialRing = TheFiniteField['x']
+def bma(sequence, TheFiniteField = GF(2)):    
+    ThePolynomialRing = TheFiniteField['X']
+    
+    # always treat input sequence as periodic
+    s = sequence * 2
 
     "using the notations in 'Shift-register synthesis and BCH decoding' by Massey"
     C = ThePolynomialRing(1)
@@ -40,8 +43,7 @@ def bma(s, TheFiniteField = GF(2)):
     # so this is the very reason why the original BMA always output $L$!!!
 
 if __name__ == '__main__':
-    #seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0)
-    seq = (0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0]
     pol = bma(seq)
     
     print 'The input sequence is', seq

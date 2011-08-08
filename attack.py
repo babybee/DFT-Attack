@@ -2,10 +2,11 @@
 
 from sage.all import *
 
+import os
+
 from dft import dft
 from lfsr import lfsr
 from bma import bma
-import os
 from coset import coset
 
 def dft_attack(seq_s, fun_f, fun_g):
