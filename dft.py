@@ -6,13 +6,7 @@ from bma import bma
 from lfsr import lfsr
 from coset import coset
 from convolution import convolution
-
-
-def Tr_m(x, m):
-    result = 0
-    for i in range(m):
-        result += (x ** (2 ** i))
-    return result
+from trace import trace
 
 
 def dft(seq_a):
@@ -83,7 +77,7 @@ def dft(seq_a):
                 seq_c.append(seq_b[(t * k) % (2**n - 1)])
         elif m < n:
             for t in range(2 * m):
-                seq_c.append(Tr_m(alpha ** (k * t), m))
+                seq_c.append(trace(alpha ** (k * t), m))
         else:
             import sys
             sys.stderr.write("should never happen?\n")

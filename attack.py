@@ -8,15 +8,16 @@ from dft import dft
 from lfsr import lfsr
 from bma import bma
 from coset import coset
+from trace import trace
 
 def dft_attack(seq_s, fun_f, fun_g):
     n = fun_f.degree()
-    field = GF(2 ** n, 'alpha', fun_f)
-    alpha = field.gen()
+    field = GF(2 ** n, name = 'gamma', modulus = fun_f)
+    gamma = field.gen()
 
     seq_b_iv = []
     for i in range(n):
-        seq_b_iv.append((alpha ** i).trace())
+        seq_b_iv.append(trace(gamma ** i))
     seq_b_generator = lfsr(seq_b_iv, fun_f)
     seq_b = []
     for i in range(2 ** n - 1):
@@ -34,7 +35,7 @@ def dft_attack(seq_s, fun_f, fun_g):
 
     # 2
     coset_leaders = coset(2 ** n - 1)
-    for k in coset_leaders:
+    for k in coset_leaders: # coset() was changed, so FIXME
         if 1 == gcd(k, 2 ** n - 1):
             break
     k_inverse = field(k) ** (-1)
@@ -47,12 +48,12 @@ def dft_attack(seq_s, fun_f, fun_g):
     S_k = dft(seq_s)
 
     # 2
-    alpha_tau = (S_k(k) * (A_k(k) ** (-1))) ** (k_inverse)
+    gamma_tau = (S_k(k) * (A_k(k) ** (-1))) ** (k_inverse)
 
     # 3
     result_u = []
     for i in range(n):
-        result_u.append((alpha_tau * (alpha ** i)).trace())
+        result_u.append(trace(gamma_tau * (gamma ** i)))
 
     return result_u
 
@@ -63,6 +64,8 @@ if __name__ == '__main__':
     polynomial_ring = GF(2)['X']
     X = polynomial_ring.gen()
     fun_f = X ** 4 + X + 1
+    print fun_f
+    # print fun_f.is_primitive()
 
     # what is the function g(...)
     fun_g = lambda state: state[0] * state[1]
