@@ -24,9 +24,9 @@ def dft_attack(seq_s, fun_f, fun_g):
         seq_b.append(seq_b_generator.next())
 
     seq_a = []
-    seq_b_double = seq_b * 2 # for ease of programming
+    seq_b_doubled = seq_b * 2 # for ease of programming
     for i in range(2 ** n - 1):
-        seq_a.append(fun_f(seq_b_double[i : (i + n)]))
+        seq_a.append(GF(2)(fun_g(seq_b_doubled[i : (i + n)])))
 
     fun_p = bma(seq_a)
     if len(seq_s) < fun_p.degree():
@@ -38,14 +38,20 @@ def dft_attack(seq_s, fun_f, fun_g):
     for k in coset_leaders: # coset() was changed, so FIXME
         if 1 == gcd(k, 2 ** n - 1):
             break
-    k_inverse = field(k) ** (-1)
+    k_inverse = field(k).pth_power(-1)
+    # print k
 
     # 3
+    # print seq_a
+    # print type(seq_a[0])
     A_k = dft(seq_a)
+    # print A_k
 
     # online phase
     # 1
+    print seq_s # problem: the example seq_s is a sequence with even length
     S_k = dft(seq_s)
+    print S_k
 
     # 2
     gamma_tau = (S_k(k) * (A_k(k) ** (-1))) ** (k_inverse)
@@ -59,12 +65,12 @@ def dft_attack(seq_s, fun_f, fun_g):
 
 
 if __name__ == '__main__':
-    seq_s = (1, 0, 1, 1, 1, 0, 1, 0, 0, 0)
+    seq_s = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0]
 
     polynomial_ring = GF(2)['X']
     X = polynomial_ring.gen()
     fun_f = X ** 4 + X + 1
-    print fun_f
+    # print fun_f
     # print fun_f.is_primitive()
 
     # what is the function g(...)

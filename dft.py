@@ -8,7 +8,6 @@ from coset import coset
 from convolution import convolution
 from trace import trace
 
-
 def dft(seq_a):
     N = len(seq_a)
     fun_p = bma(seq_a * 2) # change the input sequence as periodic
@@ -140,5 +139,6 @@ def dft(seq_a):
 
 
 if __name__ == '__main__':
-    seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+    seq = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0]
+    # seq = [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0]
     print dft(seq)
