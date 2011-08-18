@@ -2,6 +2,8 @@
 
 from sage.all import *
 
+# bma should never consider whether the sequence is periodic
+# which instead should be handlled by the caller of this funciton
 def bma(sequence, TheFiniteField = GF(2)):    
     ThePolynomialRing = TheFiniteField['X']
 

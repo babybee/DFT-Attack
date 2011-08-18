@@ -22,6 +22,7 @@ def dft_attack(seq_s, fun_f, fun_g):
     seq_b = []
     for i in range(2 ** n - 1):
         seq_b.append(seq_b_generator.next())
+    # print 'seq_b', seq_b
 
     seq_a = []
     seq_b_doubled = seq_b * 2 # for ease of programming
@@ -35,31 +36,40 @@ def dft_attack(seq_s, fun_f, fun_g):
 
     # 2
     coset_leaders = coset(2 ** n - 1)
-    for k in coset_leaders: # coset() was changed, so FIXME
-        if 1 == gcd(k, 2 ** n - 1):
+    for k in coset_leaders: # coset() is changed?
+        if 1 == gcd(k, 2 ** n - 1) and k is not 1:
             break
-    k_inverse = field(k).pth_power(-1)
-    # print k
+    # k_inverse = field(k).pth_power(-1) # not right?
+    for i in range(2 ** n - 1):
+        if (i * k) % (2 ** n - 1) == 1:
+            k_inverse = i
+            break
+    #print 'k_inverse', k_inverse
+
 
     # 3
-    # print seq_a
+    # print 'seq_a', seq_a
     # print type(seq_a[0])
-    A_k = dft(seq_a)
-    # print A_k
+    (A_k, S_k) = dft(seq_s, seq_a)
+    # print 'A_k', A_k
 
     # online phase
     # 1
-    print seq_s # problem: the example seq_s is a sequence with even length
-    S_k = dft(seq_s)
-    print S_k
+    # print 'seq_s', seq_s 
+    # two dft computations are combined now
+    # print 'S_k', S_k
 
     # 2
-    gamma_tau = (S_k(k) * (A_k(k) ** (-1))) ** (k_inverse)
+    # print 'k', k
+    # print 'k_inverse', k_inverse
+    # k_inverse = 13
+    gamma_tau = (S_k[k] * (A_k[k] ** (-1))) ** (k_inverse)
 
+    # print gamma_tau
     # 3
     result_u = []
     for i in range(n):
-        result_u.append(trace(gamma_tau * (gamma ** i)))
+        result_u.append(trace(gamma_tau * (gamma_tau.parent().gen() ** i)))
 
     return result_u
 
@@ -73,7 +83,8 @@ if __name__ == '__main__':
     # print fun_f
     # print fun_f.is_primitive()
 
-    # what is the function g(...)
-    fun_g = lambda state: state[0] * state[1]
+    # x0 + x0x1 + x3 + x0x3 + x0x1x3 + x0x2x3
+    fun_g = lambda x: x[0] + x[0] * x[1] + x[3] + x[0] * x[3] + x[0] * x[1] * x[3] + x[0] * x[2] * x[3]
 
+    print 'The initial states are'
     print dft_attack(seq_s, fun_f, fun_g)

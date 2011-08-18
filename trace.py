@@ -14,7 +14,7 @@ def trace(x, m = None):
     result = 0    
     for i in range(m):
         result += (x ** (2 ** i))
-    return result
+    return GF(2)(result)
 
 
 if __name__ == '__main__':
