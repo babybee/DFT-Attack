@@ -2,4 +2,4 @@ Bo Zhu <bo.zhu@uwaterloo.ca>
 
 using Sage (download from http://sagemath.org)
 
-attack.py is the entry point
+attack.sage is the entry point
